@@ -23,25 +23,31 @@ $ npm install
 
 #### Configure the Crawler
 
-Configuration is pretty straightforward. It's just a matter of updating config.js with the relevant hostnames and port numbers for redis, mongodb and elasticsearch instances
+Configuration is pretty straightforward. It's just a matter of updating config.js with the relevant hostnames and port numbers for redis, mongodb and elasticsearch instances. Open config.js in any text editor:
 
 ```
-/* redis host -- this is a string */
+$ nano config.js
+```
+
+and change the following variables accordingly:
+
+```
+// redis host -- this is a string
 config.redis.host = '127.0.0.1';
 
-/* redis port -- this is an integer */
+// redis port -- this is an integer
 config.redis.port = 6379;
 
-/* path to mongodb database -- this is a string */
+// path to mongodb database -- this is a string
 config.mongoServer = 'mongodb://localhost/database';
 
-/* path to elasticsearch server(s) -- this is an array containing strings which must be comma-separated */
-config.elasticServer = ['localhost:9200', 'anotherhost:9200'];
+// path to elasticsearch server(s) -- this is an array containing strings which must be comma-separated
+config.elasticServer = ['localhost:9200'];
 ```
 
 #### Set up the Index and Run Application
 
-This is a crucial step as it creates the necessary index in elasticsearch. Make sure to do this before running the crawler 
+This is a crucial step as it creates the necessary index in elasticsearch. Make sure to do this before running the crawler. 
 Run setup.js like so:
 
 ```

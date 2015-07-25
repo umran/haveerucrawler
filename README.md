@@ -35,21 +35,20 @@ config.redis.port = 6379;
 /* path to mongodb database -- this is a string */
 config.mongoServer = 'mongodb://localhost/database';
 
-/* path to elastic search server or multiple servers -- this is an array containing strings which must be comma separated */
+/* path to elasticsearch server(s) -- this is an array containing strings which must be comma-separated */
 config.elasticServer = ['localhost:9200', 'anotherhost:9200'];
 ```
 
-#### Set Up the Schema and Index
+#### Set up the Index and Run Application
 
-Once everything is configured, run setup.js like so:
+This is a crucial step as it creates the necessary index in elasticsearch. Make sure to do this before running the crawler 
+Run setup.js like so:
 
 ```
 $ node setup
 ```
-This is a crucial step as it creates the necessary schema and index in mongodb and elasticsearch respectively.
 
-#### Start the Application
-To run the application, simply do:
+Finally, to start the crawler simply do:
 
 ```
 $ node index

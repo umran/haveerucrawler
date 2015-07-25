@@ -18,6 +18,7 @@ To install dependencies, cd into the application root directory and run npm inst
 
 ```
 $ cd /path/to/haveeruexaminer
+
 $ npm install
 ```
 

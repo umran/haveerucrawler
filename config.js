@@ -3,7 +3,7 @@ var config = {};
 config.redis = {}
 
 // redis host -- this is a string
-config.redis.host = '127.0.0.1';
+config.redis.host = 'localhost';
 
 // redis port -- this is an integer
 config.redis.port = 6379;

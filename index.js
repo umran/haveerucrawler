@@ -30,9 +30,9 @@ function relay(err, stderr, stdout){
 		return;
 	}
 	if(stdout){
-		//console.log('stdout: ' + stdout);
+		console.log('stdout: ' + stdout);
 	}
 	if(stderr){
-		//console.log('stderr: ' + stderr);
+		console.log('stderr: ' + stderr);
 	}
 }

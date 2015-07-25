@@ -16,7 +16,7 @@ module.exports = function(cpPath, concurrency) {
 				return;
 			}
 			
-			callback(null, stdout, stderr);
+			callback(null, stderr, stdout);
 		});
 	}, concurrency);
 	

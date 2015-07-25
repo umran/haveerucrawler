@@ -9,7 +9,7 @@ config.redis.host = 'localhost';
 config.redis.port = 6379;
 
 // path to mongodb database -- this is a string
-config.mongoServer = 'mongodb://localhost/database';
+config.mongoServer = 'mongodb://localhost/dummy';
 
 // path to elasticsearch server(s) -- this is an array containing strings which must be comma-separated
 config.elasticServer = ['localhost:9200'];

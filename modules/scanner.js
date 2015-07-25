@@ -25,7 +25,7 @@ module.exports = function(){
 							callback(null, 'unexpected redis error occurred');
 							return;
 						}
-						if(res === 'inq'){
+						if(res === 'inq' || res === 'retry'){
 							results.push(url);
 							callback();
 							return;

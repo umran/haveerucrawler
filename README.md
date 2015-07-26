@@ -14,23 +14,27 @@ Do the following after cloning into or downloading haveerucrawler
 
 #### Install Package Dependencies
 
-To install dependencies, cd into the application root directory and run npm install like so:
+To install dependencies, cd into the application root directory
 
 ```
 $ cd /path/to/haveeruexaminer
+```
 
+...and run npm install like so
+
+```
 $ npm install
 ```
 
 #### Configure the Crawler
 
-Configuration is pretty straightforward. It's just a matter of updating config.js with the relevant hostnames and port numbers for redis, mongodb and elasticsearch instances. Open config.js in any text editor:
+Configuration is pretty straightforward. It's just a matter of updating config.js with the relevant hostnames and port numbers for redis, mongodb and elasticsearch instances. Open config.js in any text editor
 
 ```
 $ nano config.js
 ```
 
-and change the following variables accordingly:
+and change the following variables accordingly
 
 ```
 // redis host -- this is a string
@@ -49,13 +53,13 @@ config.elasticServer = ['localhost:9200'];
 #### Set up the Index and Run Application
 
 This is a crucial step as it creates the necessary index in elasticsearch. Make sure to do this before running the crawler. 
-Run setup.js like so:
+Run setup.js like so
 
 ```
 $ node setup
 ```
 
-Finally, to start the crawler simply do:
+Finally, to start the crawler simply do
 
 ```
 $ node index

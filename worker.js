@@ -242,8 +242,16 @@ read(jobUrl, function(error, response, body){
 				callback();
 				return;
 			}
-			process.stdout.write(doc.hash);
-			callback();
+			
+			//fire callback once we get a reply from elasticsearch
+			newDoc.on('es-indexed', function(err){
+				if (err){
+					callback(err);
+					return;
+				}
+				process.stdout.write(doc.hash);
+				callback();
+			});
 		});
 	});
 	

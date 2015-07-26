@@ -46,6 +46,9 @@ function relay(err, stderr, stdout){
 		console.error(err);
 		return;
 	}
+	if(stderr){
+		io.emit('exception', stderr);
+	}
 	if(stdout){
 		io.emit('update', stdout);
 	}

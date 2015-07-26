@@ -26,13 +26,13 @@ function commitState(state){
 		if(state === 'retry'){
 			client.get(jobUrl, function(err, res){
 				if(err){
-					callback(err);
+					callback('unexpected redis error occurred');
 					return;
 				}
 				if(res === 'retry'){
 					client.set(jobUrl, 'done', function(err){
 						if(err){
-							callback(err);
+							callback('unexpected redis error occurred');
 							return;
 						}
 						callback();
@@ -41,7 +41,7 @@ function commitState(state){
 				}
 				client.set(jobUrl, state, function(err){
 					if(err){
-						callback(err);
+						callback('unexpected redis error occurred');
 						return;
 					}
 					callback();
@@ -52,7 +52,7 @@ function commitState(state){
 		
 		client.set(jobUrl, state, function(err){
 			if(err){
-				callback(err);
+				callback('unexpected redis error occurred');
 				return;
 			}
 			callback();
@@ -66,7 +66,7 @@ queries.push(function(callback){
 	newRec.save(function (err) {
 		if (err){
 			if(err.code !== 11000){
-				callback(err);
+				callback('unexpected mongo error occurred');
 				return;
 			}
 			callback();
@@ -80,7 +80,7 @@ queries.push(function(callback){
 //download url
 read(jobUrl, function(error, response, body){
 	if(error){
-		process.stderr.write(error);
+		process.stderr.write('error occurred in fetching resource, likely a type error');
 		state = 'retry';
 		
 		//assert state
@@ -88,7 +88,7 @@ read(jobUrl, function(error, response, body){
 		
 		
 		//execute all io calls in parallel and quit script once all operations have called back
-		async.parallel(queries, function(err,res){
+		async.parallel(queries, function(err){
 			if(err){
 				process.stderr.write(err);
 			}
@@ -107,7 +107,7 @@ read(jobUrl, function(error, response, body){
 		
 		
 		//execute all io calls in parallel and quit script once all operations have called back
-		async.parallel(queries, function(err,res){
+		async.parallel(queries, function(err){
 			if(err){
 				process.stderr.write(err);
 			}
@@ -147,7 +147,7 @@ read(jobUrl, function(error, response, body){
 			// begin query
 			record.count({url:link},function(err,count){
 				if(err){
-					callback(err);
+					callback('unexpected mongo error occurred');
 					return;
 				}
 		
@@ -159,7 +159,7 @@ read(jobUrl, function(error, response, body){
 				//check if url exists in redis queue
 				client.exists(link,function(err,res){
 					if(err){
-						callback(err);
+						callback('unexpected redis error occurred');
 						return;
 					}
 					if(res === 1){
@@ -170,7 +170,7 @@ read(jobUrl, function(error, response, body){
 					//send new url to redis
 					client.set(link, 'inq',function(err){
 						if(err){
-							callback(err);
+							callback('unexpected redis error occurred');
 							return;
 						}
 						callback();
@@ -183,7 +183,7 @@ read(jobUrl, function(error, response, body){
 	//check if document is an article
 	if($('.post-frame').length === 0){
 		//execute all io calls in parallel and quit script once all operations have called back
-		async.parallel(queries, function(err,res){
+		async.parallel(queries, function(err){
 			if(err){
 				process.stderr.write(err);
 			}
@@ -198,7 +198,7 @@ read(jobUrl, function(error, response, body){
 		if($('.post-frame').find($('.service-holder')).length === 0){
 			if($('.post-frame').find($('.comments')).length === 0){
 				//execute all io calls in parallel and quit script once all operations have called back
-				async.parallel(queries, function(err,res){
+				async.parallel(queries, function(err){
 					if(err){
 						process.stderr.write(err);
 					}
@@ -236,27 +236,19 @@ read(jobUrl, function(error, response, body){
 		newDoc.save(function (err){
 			if (err){
 				if(err.code !== 11000){
-					callback(err);
+					callback('unexpected mongo error occurred');
 					return;
 				}
 				callback();
 				return;
 			}
-			
-			//fire callback once we get a reply from elasticsearch
-			newDoc.on('es-indexed', function(err){
-				if (err){
-					callback(err);
-					return;
-				}
-				process.stdout.write(doc.hash);
-				callback();
-			});
+			process.stdout.write(doc.hash);
+			callback();
 		});
 	});
 	
 	//execute all io calls in parallel and quit script once all operations have called back
-	async.parallel(queries, function(err,res){
+	async.parallel(queries, function(err){
 		if(err){
 			process.stderr.write(err);
 		}

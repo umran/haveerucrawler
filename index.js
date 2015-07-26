@@ -1,6 +1,6 @@
 var client = require('./modules/shared/redisClient.js');
 var conveyor = require('./modules/conveyor.js');
-var belt = new conveyor('./worker.js', './spooler.js', 8);
+var belt = new conveyor('./worker.js', './seeder.js', 8);
 var scanner = require('./modules/scanner.js');
 var scan = new scanner();
 

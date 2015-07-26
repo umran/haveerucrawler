@@ -1,15 +1,26 @@
 var async = require('async');
 var exec = require('child_process').exec;
 
-module.exports = function(cpPath, concurrency) {
-	var cpPath = cpPath;
+module.exports = function(worker, seeder, concurrency) {
+	var worker = worker;
+	var seeder = seeder;
 	if (typeof concurrency === 'undefined'){
 		var concurrency = 1;
 	}
 	var concurrency = concurrency;
 	
 	this.queue = async.queue(function (url, callback) {
-    var args = "node "+ cpPath +" '"+ url +"'";
+		
+		//default worker
+		var cp = worker;
+		
+		if(url.seed === true){
+			cp = seeder;
+			url = url.url;
+		}
+		
+		var args = "node "+ cp +" '"+ url +"'";
+    
     exec(args, {timeout: 300000}, function(err, stdout, stderr){
 			if(err){
 				callback(err);

@@ -1,10 +1,10 @@
 var client = require('./modules/shared/redisClient.js');
 var conveyor = require('./modules/conveyor.js');
-var belt = new conveyor('./worker.js', 8);
+var belt = new conveyor('./worker.js', './spooler.js', 8);
 var scanner = require('./modules/scanner.js');
 var scan = new scanner();
 
-belt.process(['http://www.haveeru.com.mv/','http://haveeru.com.mv/dhivehi/'], relay);
+belt.process([{url:'http://www.haveeru.com.mv/', seed:true},{url:'http://www.haveeru.com.mv/dhivehi/', seed:true}], relay);
 
 belt.queue.drain = function(){
 	console.log('current batch done');
@@ -26,6 +26,9 @@ belt.queue.drain = function(){
 
 function relay(err, stderr, stdout){
 	if(err){
+		if(err.code === null){
+			return;
+		}
 		console.error(err);
 		return;
 	}

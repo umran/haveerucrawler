@@ -61,22 +61,21 @@ function commitState(state){
 }
 
 //tell db that link has been checked at least once
-if(jobUrl !== 'http://haveeru.com.mv/' && jobUrl !== 'http://haveeru.com.mv/dhivehi/'){
-	queries.push(function(callback){
-		var newRec = new record({url:jobUrl});
-		newRec.save(function (err) {
-			if (err){
-				if(err.code !== 11000){
-					callback(err);
-					return;
-				}
-				callback();
+queries.push(function(callback){
+	var newRec = new record({url:jobUrl});
+	newRec.save(function (err) {
+		if (err){
+			if(err.code !== 11000){
+				callback(err);
 				return;
 			}
 			callback();
-		});
+			return;
+		}
+		callback();
 	});
-}
+});
+
 
 //download url
 read(jobUrl, function(error, response, body){
@@ -85,9 +84,8 @@ read(jobUrl, function(error, response, body){
 		state = 'retry';
 		
 		//assert state
-		if(jobUrl !== 'http://haveeru.com.mv/' && jobUrl !== 'http://haveeru.com.mv/dhivehi/'){
-			commitState(state);
-		}
+		commitState(state);
+		
 		
 		//execute all io calls in parallel and quit script once all operations have called back
 		async.parallel(queries, function(err,res){
@@ -105,9 +103,8 @@ read(jobUrl, function(error, response, body){
 		state = 'retry';
 		
 		//assert state
-		if(jobUrl !== 'http://haveeru.com.mv/' && jobUrl !== 'http://haveeru.com.mv/dhivehi/'){
-			commitState(state);
-		}
+		commitState(state);
+		
 		
 		//execute all io calls in parallel and quit script once all operations have called back
 		async.parallel(queries, function(err,res){
@@ -122,20 +119,14 @@ read(jobUrl, function(error, response, body){
 	}
 	
 	//assert state
-	if(jobUrl !== 'http://haveeru.com.mv/' && jobUrl !== 'http://haveeru.com.mv/dhivehi/'){
-		commitState(state);
-	}
+	commitState(state);
+	
 	//load body into DOM
 	var $ = cheerio.load(body, {normalizeWhitespace: true, xmlMode: true});
 
 	//extract all links
 	$($('a')).each(function(i, link){
 		if(!$(link).attr('href')){
-			return;
-		}
-	
-		//once again ignore the seeds
-		if($(link).attr('href') === 'http://www.haveeru.com.mv/' || $(link).attr('href') === 'http://www.haveeru.com.mv/dhivehi/' || $(link).attr('href') === 'http://www.haveeru.com.mv' || $(link).attr('href') === 'http://www.haveeru.com.mv/dhivehi'){
 			return;
 		}
 	

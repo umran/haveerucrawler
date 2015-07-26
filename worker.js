@@ -88,7 +88,7 @@ read(jobUrl, function(error, response, body){
 		
 		
 		//execute all io calls in parallel and quit script once all operations have called back
-		async.parallel(queries, function(err,res){
+		async.parallel(queries, function(err){
 			if(err){
 				process.stderr.write(err);
 			}
@@ -107,7 +107,7 @@ read(jobUrl, function(error, response, body){
 		
 		
 		//execute all io calls in parallel and quit script once all operations have called back
-		async.parallel(queries, function(err,res){
+		async.parallel(queries, function(err){
 			if(err){
 				process.stderr.write(err);
 			}
@@ -183,7 +183,7 @@ read(jobUrl, function(error, response, body){
 	//check if document is an article
 	if($('.post-frame').length === 0){
 		//execute all io calls in parallel and quit script once all operations have called back
-		async.parallel(queries, function(err,res){
+		async.parallel(queries, function(err){
 			if(err){
 				process.stderr.write(err);
 			}
@@ -198,7 +198,7 @@ read(jobUrl, function(error, response, body){
 		if($('.post-frame').find($('.service-holder')).length === 0){
 			if($('.post-frame').find($('.comments')).length === 0){
 				//execute all io calls in parallel and quit script once all operations have called back
-				async.parallel(queries, function(err,res){
+				async.parallel(queries, function(err){
 					if(err){
 						process.stderr.write(err);
 					}
@@ -242,21 +242,13 @@ read(jobUrl, function(error, response, body){
 				callback();
 				return;
 			}
-			
-			//fire callback once we get a reply from elasticsearch
-			newDoc.on('es-indexed', function(err){
-				if (err){
-					callback(err);
-					return;
-				}
-				process.stdout.write(doc.hash);
-				callback();
-			});
+			process.stdout.write(doc.hash);
+			callback();
 		});
 	});
 	
 	//execute all io calls in parallel and quit script once all operations have called back
-	async.parallel(queries, function(err,res){
+	async.parallel(queries, function(err){
 		if(err){
 			process.stderr.write(err);
 		}

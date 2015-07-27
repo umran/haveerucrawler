@@ -3,7 +3,7 @@ var socket = require('socket.io-client');
 var io = socket.connect(config.ioServer);
 var client = require('./modules/shared/redisClient.js');
 var conveyor = require('./modules/conveyor.js');
-var belt = new conveyor('./worker.js', './seeder.js', 2);
+var belt = new conveyor('./worker.js', './seeder.js', 1);
 var scanner = require('./modules/scanner.js');
 var scan = new scanner();
 var events = require('events');
@@ -52,7 +52,7 @@ function relay(err, stderr, stdout){
 		//errors emitted by exec may be ignored if they meet the below conditions, i.e if the child process simply timed out
 		if(err.killed === true && err.code === null && err.signal === 'SIGTERM'){
 			console.log('worker process timed out');
-			return;	
+			return;
 		}
 		console.error(err);
 		eventEmitter.emit('die');

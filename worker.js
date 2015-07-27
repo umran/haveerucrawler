@@ -26,13 +26,13 @@ function commitState(state){
 		if(state === 'retry'){
 			client.get(jobUrl, function(err, res){
 				if(err){
-					callback('unexpected redis error occurred');
+					callback(new Error('Redis Error: An error occurred during get operation'));
 					return;
 				}
 				if(res === 'retry'){
 					client.set(jobUrl, 'done', function(err){
 						if(err){
-							callback('unexpected redis error occurred');
+							callback(new Error('Redis Error: An error occurred during set operation'));
 							return;
 						}
 						callback();
@@ -41,7 +41,7 @@ function commitState(state){
 				}
 				client.set(jobUrl, state, function(err){
 					if(err){
-						callback('unexpected redis error occurred');
+						callback(new Error('Redis Error: An error occurred during set operation'));
 						return;
 					}
 					callback();
@@ -52,7 +52,7 @@ function commitState(state){
 		
 		client.set(jobUrl, state, function(err){
 			if(err){
-				callback('unexpected redis error occurred');
+				callback(new Error('Redis Error: An error occurred during set operation'));
 				return;
 			}
 			callback();
@@ -66,7 +66,7 @@ queries.push(function(callback){
 	newRec.save(function (err) {
 		if (err){
 			if(err.code !== 11000){
-				callback('unexpected mongo error occurred');
+				callback(new Error('Mongo Error: An error occurred during save operation'));
 				return;
 			}
 			callback();
@@ -80,7 +80,7 @@ queries.push(function(callback){
 //download url
 read(jobUrl, function(error, response, body){
 	if(error){
-		process.stderr.write('error occurred in fetching resource, likely a type error');
+		//this error is handled directly in the callback function
 		state = 'retry';
 		
 		//assert state
@@ -90,7 +90,7 @@ read(jobUrl, function(error, response, body){
 		//execute all io calls in parallel and quit script once all operations have called back
 		async.parallel(queries, function(err){
 			if(err){
-				process.stderr.write(err);
+				console.error(err);
 			}
 			mongoose.disconnect();
 			client.quit();
@@ -99,7 +99,6 @@ read(jobUrl, function(error, response, body){
 		return;
 	}
 	if(response.statusCode !== 200){
-		process.stderr.write('server returned !200 for resource');
 		state = 'retry';
 		
 		//assert state
@@ -109,7 +108,7 @@ read(jobUrl, function(error, response, body){
 		//execute all io calls in parallel and quit script once all operations have called back
 		async.parallel(queries, function(err){
 			if(err){
-				process.stderr.write(err);
+				console.error(err);
 			}
 			mongoose.disconnect();
 			client.quit();
@@ -147,7 +146,7 @@ read(jobUrl, function(error, response, body){
 			// begin query
 			record.count({url:link},function(err,count){
 				if(err){
-					callback('unexpected mongo error occurred');
+					callback(new Error('Mongo Error: An error occurred during count operation'));
 					return;
 				}
 		
@@ -159,7 +158,7 @@ read(jobUrl, function(error, response, body){
 				//check if url exists in redis queue
 				client.exists(link,function(err,res){
 					if(err){
-						callback('unexpected redis error occurred');
+						callback(new Error('Redis Error: An error occurred during exists operation'));
 						return;
 					}
 					if(res === 1){
@@ -170,7 +169,7 @@ read(jobUrl, function(error, response, body){
 					//send new url to redis
 					client.set(link, 'inq',function(err){
 						if(err){
-							callback('unexpected redis error occurred');
+							callback(new Error('Redis Error: An error occurred during set operation'));
 							return;
 						}
 						callback();
@@ -185,7 +184,7 @@ read(jobUrl, function(error, response, body){
 		//execute all io calls in parallel and quit script once all operations have called back
 		async.parallel(queries, function(err){
 			if(err){
-				process.stderr.write(err);
+				console.error(err);
 			}
 			mongoose.disconnect();
 			client.quit();
@@ -200,7 +199,7 @@ read(jobUrl, function(error, response, body){
 				//execute all io calls in parallel and quit script once all operations have called back
 				async.parallel(queries, function(err){
 					if(err){
-						process.stderr.write(err);
+						console.error(err);
 					}
 					mongoose.disconnect();
 					client.quit();
@@ -236,21 +235,34 @@ read(jobUrl, function(error, response, body){
 		newDoc.save(function (err){
 			if (err){
 				if(err.code !== 11000){
-					callback('unexpected mongo error occurred');
+					callback(new Error('Mongo Error: An error occurred during save operation'));
 					return;
 				}
 				callback();
 				return;
 			}
-			process.stdout.write(doc.hash);
-			callback();
+			newDoc.on('es-indexed', function(err){
+				if(err){
+					callback(500);
+					return;
+				}
+				process.stdout.write(doc.hash);
+				callback();
+			});
 		});
 	});
 	
 	//execute all io calls in parallel and quit script once all operations have called back
 	async.parallel(queries, function(err){
 		if(err){
-			process.stderr.write(err);
+			if(err === 500){
+				console.error(new Error('Elasticsearch Error: An error occurred during the indexing operation'));
+				mongoose.disconnect();
+				client.quit();
+				process.exit();
+				return;
+			}
+			console.error(err);
 		}
 		mongoose.disconnect();
 		client.quit();

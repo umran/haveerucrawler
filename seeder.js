@@ -55,7 +55,7 @@ read(jobUrl, function(error, response, body){
 			// begin query
 			record.count({url:link},function(err,count){
 				if(err){
-					callback(err);
+					callback(new Error('Mongo Error: An error occurred during count operation'));
 					return;
 				}
 		
@@ -67,7 +67,7 @@ read(jobUrl, function(error, response, body){
 				//check if url exists in redis queue
 				client.exists(link,function(err,res){
 					if(err){
-						callback(err);
+						callback(new Error('Redis Error: An error occurred during exists operation'));
 						return;
 					}
 					if(res === 1){
@@ -78,7 +78,7 @@ read(jobUrl, function(error, response, body){
 					//send new url to redis
 					client.set(link, 'inq',function(err){
 						if(err){
-							callback(err);
+							callback(new Error('Redis Error: An error occurred during set operation'));
 							return;
 						}
 						callback();
@@ -89,9 +89,9 @@ read(jobUrl, function(error, response, body){
 	});
 	
 	//execute all io calls in parallel and quit script once all operations have called back
-	async.parallel(queries, function(err,res){
+	async.parallel(queries, function(err){
 		if(err){
-			process.stderr.write(err);
+			console.error(err);
 		}
 		mongoose.disconnect();
 		client.quit();

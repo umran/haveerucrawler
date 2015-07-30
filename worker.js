@@ -241,7 +241,6 @@ read(jobUrl, function(error, response, body){
 				callback();
 				return;
 			}
-			
 			newDoc.on('es-indexed', function(err){
 				if(err){
 					callback(500);

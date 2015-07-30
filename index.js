@@ -44,7 +44,7 @@ belt.queue.drain = function(){
 }
 
 eventEmitter.once('die', function(){
-	//signal ungraceful-exit-state to front end
+	//signal ungraceful-exit-state to front-end
 	io.emit('status', 2);
 	
 	belt.queue.kill();

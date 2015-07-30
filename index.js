@@ -31,8 +31,10 @@ belt.queue.drain = function(){
 			return;
 		}
 		
-		//signal idle-state to front-end and sit idle for 5 minutes until the next try
+		//signal idle-state to front-end
 		io.emit('status', 0);
+		
+		//sit idle for 5 minutes before the next try
 		console.log('no more jobs remaining: application will quit in 5 minutes');
 		setTimeout(function(){
 			client.quit();
@@ -42,6 +44,9 @@ belt.queue.drain = function(){
 }
 
 eventEmitter.once('die', function(){
+	//signal ungraceful-exit-state to front end
+	io.emit('status', 2);
+	
 	belt.queue.kill();
 	client.quit();
 	io.close();

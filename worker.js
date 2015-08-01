@@ -228,10 +228,11 @@ read(jobUrl, function(error, response, body){
 	doc.main = $('.intro','.post-frame').nextUntil(until).html();
 	doc.fulltext = $('.intro','.post-frame').nextUntil(until).text();
 	doc.hash = crypto.createHash('sha256').update(doc.url.concat(doc.title,doc.byline,doc.date,doc.intro,doc.main,doc.fulltext)).digest('hex');
+	doc.dupfilter = crypto.createHash('sha256').update(doc.title.concat(doc.byline,doc.date,doc.intro,doc.main,doc.fulltext)).digest('hex');
 
 	//send document to be saved on disk
 	queries.push(function(callback){
-		var newDoc = new document({url:doc.url, r_title:doc.title, r_byline:doc.byline, r_date:doc.date, r_intro:doc.intro, r_main:doc.main, fulltext:doc.fulltext, hash:doc.hash});
+		var newDoc = new document({url:doc.url, r_title:doc.title, r_byline:doc.byline, r_date:doc.date, r_intro:doc.intro, r_main:doc.main, fulltext:doc.fulltext, hash:doc.hash, dup_filter:doc.dupfilter});
 		newDoc.save(function (err){
 			if (err){
 				if(err.code !== 11000){

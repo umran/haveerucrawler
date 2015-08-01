@@ -11,7 +11,8 @@ var docSchema = new mongoose.Schema({
   r_intro: {type: String, required: false, es_indexed:true},
   r_main: {type: String, required: false},
   fulltext: {type: String, required: false, es_indexed:true},
-  hash: {type: String, required: true}
+  hash: {type: String, required: true, es_indexed:true, es_index:'not_analyzed'},
+  dup_filter: {type: String, required: true, es_indexed:true, es_index:'not_analyzed'}
 });
 
 docSchema.plugin(mongoosastic, {

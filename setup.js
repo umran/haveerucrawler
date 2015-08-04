@@ -29,10 +29,6 @@ Doc.createMapping(
 				"type": "stop",
 				"stopwords": "_english_" 
 			},
-			"english_keywords": {
-				"type": "keyword_marker",
-				"keywords": [] 
-			},
 			"english_stemmer": {
 				"type": "stemmer",
 				"language": "english"
@@ -49,7 +45,6 @@ Doc.createMapping(
 					"english_possessive_stemmer",
 					"lowercase",
 					"english_stop",
-					"english_keywords",
 					"english_stemmer"
 				]
 			}

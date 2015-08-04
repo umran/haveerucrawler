@@ -22,14 +22,37 @@ docSchema.plugin(mongoosastic, {
 var Doc = mongoose.model('Doc', docSchema);
 
 Doc.createMapping({
-"analysis" : {
-    "analyzer":{
-      "content":{
-        "type":"custom",
-        "tokenizer":"whitespace"
-      }
-    }
-  }
+"analysis": {
+	"filter": {
+		"english_stop": {
+			"type": "stop",
+			"stopwords": "_english_" 
+		},
+		"english_keywords": {
+			"type": "keyword_marker",
+			"keywords": [] 
+		},
+		"english_stemmer": {
+			"type": "stemmer",
+			"language": "english"
+		},
+		"english_possessive_stemmer": {
+			"type": "stemmer",
+			"language": "possessive_english"
+		}
+	},
+	"analyzer": {
+		"english": {
+			"tokenizer":  "standard",
+			"filter": [
+				"english_possessive_stemmer",
+				"lowercase",
+				"english_stop",
+				"english_keywords",
+				"english_stemmer"
+			]
+		}
+	}
 },function(err, mapping){
 	if(err){
 		console.log(err);

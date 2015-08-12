@@ -167,7 +167,7 @@ read(jobUrl, function(error, response, body){
 					}
 			
 					//send new url to redis
-					client.set(link, 'inq',function(err){
+					client.set(link, 'inq', function(err){
 						if(err){
 							callback(new Error('Redis Error: An error occurred during set operation'));
 							return;

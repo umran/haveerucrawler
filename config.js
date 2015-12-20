@@ -12,9 +12,9 @@ config.redis.port = 6379;
 config.mongoServer = 'mongodb://localhost/haveeruexaminer';
 
 // path to elasticsearch server(s) -- this is an array containing strings which must be comma-separated
-config.elasticServer = ['10.129.253.159:9200'];
+config.elasticServer = ['localhost:9200'];
 
 // path to socket.io server -- this is a string
-config.ioServer = 'http://10.129.253.151:3080';
+config.ioServer = 'http://localhost:3080';
 
 module.exports = config;

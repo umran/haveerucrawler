@@ -101,9 +101,19 @@ read(jobUrl, function(error, response, body){
 		async.parallel(queries, function(err){
 			if(err){
 				console.error(err);
+				mongoose.disconnect();
+				client.quit();
+				return;
 			}
-			mongoose.disconnect();
-			client.quit();
+			
+			//finish up deferred queries
+			async.parallel(deferred, function(err){
+				if(err){
+					console.error(err);
+				}
+				mongoose.disconnect();
+				client.quit();
+			});
 		});
 		
 		return;
@@ -119,9 +129,19 @@ read(jobUrl, function(error, response, body){
 		async.parallel(queries, function(err){
 			if(err){
 				console.error(err);
+				mongoose.disconnect();
+				client.quit();
+				return;
 			}
-			mongoose.disconnect();
-			client.quit();
+			
+			//finish up deferred queries
+			async.parallel(deferred, function(err){
+				if(err){
+					console.error(err);
+				}
+				mongoose.disconnect();
+				client.quit();
+			});
 		});
 		
 		return;

@@ -331,18 +331,11 @@ read(jobUrl, function(error, response, body){
 			//special case
 			if(err === 700){
 				console.error(new Error('Elasticsearch Error: An error occurred during the indexing operation'));
-				
-				//finish up deferred queries
-				async.parallel(deferred, function(err){
-					if(err){
-						console.error(err);
-					}
 					
-					//gracefully shutdown I/O and manually kill the process
-					mongoose.disconnect();
-					client.quit();
-					process.exit();
-				});
+				//gracefully shutdown I/O and manually kill the process
+				mongoose.disconnect();
+				client.quit();
+				process.exit();
 				
 				return;
 			}

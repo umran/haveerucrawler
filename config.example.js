@@ -1,3 +1,4 @@
+var fs = require('fs')
 var config = {};
 
 config.redis = {};
@@ -13,7 +14,7 @@ config.mongoServer = 'mongodb://localhost/haveeruexaminer';
 
 // configuration for elasticsearch cluster
 config.elasticServer = {
-	host: 'http://@localhost:9200'
+	hosts: ['http://localhost:9200']
 }
 
 // path to socket.io server -- this is a string

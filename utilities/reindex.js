@@ -1,4 +1,4 @@
-var config = require('../config.js');
+var config = require('../config');
 var mongoose = require('mongoose');
 mongoose.connect(config.mongoServer);
 var Doc = require('../models/doc');

@@ -16,9 +16,7 @@ var docSchema = new mongoose.Schema({
   dup_filter: {type: String, required: true, es_indexed:true, es_index:'not_analyzed'}
 });
 
-docSchema.plugin(mongoosastic, {
-	hosts: config.elasticServer
-});
+docSchema.plugin(mongoosastic, config.elasticServer);
 
 var Doc = mongoose.model('Doc', docSchema);
 

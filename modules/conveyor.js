@@ -1,43 +1,48 @@
+var config = require('../config.js');
 var async = require('async');
-var exec = require('child_process').exec;
+var Seeder = require('./seeder');
+var Worker = require('./worker');
 
-module.exports = function(worker, seeder, concurrency) {
-	var worker = worker;
-	var seeder = seeder;
-	if (typeof concurrency === 'undefined'){
-		var concurrency = 1;
-	}
-	var concurrency = concurrency;
+function Conveyor(redis_client) {
 	
 	this.queue = async.queue(function (url, callback) {
 		
-		//default worker
-		var cp = worker;
-		
 		if(url.seed === true){
-			cp = seeder;
-			url = url.url;
-		}
 		
-		var args = "node "+ cp +" '"+ url +"'";
-    
-    exec(args, {timeout: 300000}, function(err, stdout, stderr){
-			if(err){
-				callback(err);
-				return;
-			}
+			var seeder = new Seeder(redis_client);
+		
+			seeder.seed(url.url, function(err){
+				if(err){
+					callback(err);
+					return;
+				}
+				callback(null, url.url);
+			});
 			
-			callback(null, stderr, stdout);
-		});
-	}, concurrency);
-	
-	this.process = function(url, callback){
-		this.queue.push(url, function(err, stderr, stdout){
+			return;
+		}
+    
+    		var worker = new Worker(redis_client);
+
+		worker.work(url, function(err){
 			if(err){
 				callback(err);
 				return;
 			}
-			callback(null, stderr, stdout);
+			callback(null, url);
 		});
-	}
+
+	}, config.concurrency);
 }
+
+Conveyor.prototype.process = function(url, callback){
+	this.queue.push(url, function(err, msg){
+		if(err){
+			callback(err);
+			return;
+		}
+		callback(null, msg);
+	});
+}
+
+module.exports = Conveyor;

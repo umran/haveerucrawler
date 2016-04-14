@@ -1,13 +1,20 @@
+//actual application
 var config = require('./config.js');
 var socket = require('socket.io-client');
 var io = socket.connect(config.ioServer);
-var client = require('./modules/shared/redisClient.js');
-var conveyor = require('./modules/conveyor.js');
-var belt = new conveyor('./worker.js', './seeder.js', 8);
-var scanner = require('./modules/scanner.js');
-var scan = new scanner();
+var redisConfig = config.redis;
+var redis = require('redis');
+var client = redis.createClient(config.redis.port, config.redis.host);
+var mongoose = require('mongoose');
+var Conveyor = require('./modules/conveyor.js');
+var belt = new Conveyor(client);
+var Scanner = require('./modules/scanner.js');
+var scan = new Scanner(client);
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
+
+//connect to mongodb
+mongoose.connect(config.mongoServer);
 
 //signal active-state to front-end
 io.on('connect', function(){
@@ -20,7 +27,7 @@ belt.queue.drain = function(){
 	console.log('current batch done');
 	scan.fetch(function(err, res){
 		if(err){
-			console.error(err);
+			console.log(err);
 			client.quit();
 			io.close();
 			return;
@@ -38,6 +45,7 @@ belt.queue.drain = function(){
 		console.log('no more jobs remaining: application will quit in 5 minutes');
 		setTimeout(function(){
 			client.quit();
+			mongoose.disconnect();
 			io.close();
 		},300000);
 	});
@@ -47,28 +55,21 @@ eventEmitter.once('die', function(){
 	//signal ungraceful-exit-state to front-end
 	io.emit('status', 2);
 	
+	//kill all remaining jobs in queue
 	belt.queue.kill();
+	
+	//terminate all io connections
 	client.quit();
+	mongoose.disconnect();
 	io.close();
 });
 
-function relay(err, stderr, stdout){
+function relay(err, msg){
 	if(err){
-		//errors emitted by exec may be ignored if they meet the below conditions, i.e if the child process simply timed out
-		if(err.killed === true && err.code === null && err.signal === 'SIGTERM'){
-			console.log('worker process timed out');
-			return;
-		}
-		console.error(err);
+		console.log(err);
 		eventEmitter.emit('die');
 		return;
 	}
-	if(stderr){
-		console.error(stderr);
-		eventEmitter.emit('die');
-		return;
-	}
-	if(stdout){
-		io.emit('update', stdout);
-	}
+	
+	console.log(msg);
 }

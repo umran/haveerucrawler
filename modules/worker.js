@@ -96,6 +96,9 @@ Worker.prototype.work = function(jobUrl, callback){
 	//download url
 	read(jobUrl, function(error, response, body){
 		if(error){
+			//debug
+			console.log('Warning: Request Error - Retrying');
+		
 			//self error is handled directly in the callback function
 			self.state = 'retry';
 		
@@ -123,11 +126,13 @@ Worker.prototype.work = function(jobUrl, callback){
 			return;
 		}
 		if(response.statusCode !== 200){
+			//debug
+			console.log('Warning: Bad HTTP Response - Retrying');
+
 			self.state = 'retry';
 		
 			//assert state
 			commitState(self.state);
-		
 		
 			//execute all io calls in parallel and quit script once all operations have called back
 			async.parallel(self.queries, function(err){
@@ -329,7 +334,6 @@ Worker.prototype.work = function(jobUrl, callback){
 				//special case
 				if(err === 700){
 					callback(new Error('Elasticsearch Error: An error occurred during the indexing operation'));
-				
 					return;
 				}
 

@@ -1,6 +1,3 @@
-//profiling
-require('look').start();
-
 //actual application
 var config = require('./config.js');
 var socket = require('socket.io-client');
@@ -9,10 +6,10 @@ var redisConfig = config.redis;
 var redis = require('redis');
 var client = redis.createClient(config.redis.port, config.redis.host);
 var mongoose = require('mongoose');
-var conveyor = require('./modules/conveyor.js');
-var belt = new conveyor(client);
-var scanner = require('./modules/scanner.js');
-var scan = new scanner(client);
+var Conveyor = require('./modules/conveyor.js');
+var belt = new Conveyor(client);
+var Scanner = require('./modules/scanner.js');
+var scan = new Scanner(client);
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
@@ -60,6 +57,11 @@ eventEmitter.once('die', function(){
 	
 	//kill all remaining jobs in queue
 	belt.queue.kill();
+	
+	//terminate all io connections
+	client.quit();
+	mongoose.disconnect();
+	io.close();
 });
 
 function relay(err, msg){

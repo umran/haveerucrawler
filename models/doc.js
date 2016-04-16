@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var mongoosastic = require('mongoosastic');
 
 var docSchema = new mongoose.Schema({
-  url: {type: String, unique: true, required: true, es_indexed:true, es_index:'not_analyzed'},
+  url: {type: String, unique: true, required: true, es_indexed:true, es_analyzer:'english'},
   r_title: {type: String, required: false, es_indexed:true, es_analyzer:'english'},
   r_byline: {type: String, required: false, es_indexed:true, es_analyzer:'english'},
   r_date: {type: String, required: false},

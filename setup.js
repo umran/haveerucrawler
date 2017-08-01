@@ -6,7 +6,7 @@ Doc.createMapping(
 		"filter": {
 			"english_stop": {
 				"type": "stop",
-				"stopwords": "_english_" 
+				"stopwords": "_english_"
 			},
 			"english_stemmer": {
 				"type": "stemmer",

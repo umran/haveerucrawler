@@ -4,13 +4,13 @@ mongoose.connect(config.mongoServer);
 var Doc = require('../models/doc');
 
 // flush index
-Doc.esTruncate(function(err){
+/*Doc.esTruncate(function(err){
 	if(err){
 		console.log(err);
 		return;
 	}
 	console.log('success!');
-});
+});*/
 
 // synchronize index
 
@@ -18,6 +18,7 @@ var stream = Doc.synchronize()
   , count = 0;
 
 stream.on('data', function(err, doc){
+  console.log('data')
   count++;
 });
 stream.on('close', function(){
